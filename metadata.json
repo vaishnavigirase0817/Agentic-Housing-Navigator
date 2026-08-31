@@ -1,0 +1,6 @@
+{
+  "name": "Agentic Housing Navigator",
+  "description": "Autonomous housing search mission control powered by AI that parses natural-language requirements, evaluates demo property datasets, ranks matches, and monitors listings.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

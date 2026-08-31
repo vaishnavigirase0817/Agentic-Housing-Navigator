@@ -1,312 +1,310 @@
-# Agentic Housing Navigator 🧭
-*Autonomous, Multi-Agent Real Estate Mission Control Powered by Google Cloud, Google ADK & Gemini 3.7 Flash*
+# 🏠 Agentic Housing Navigator
+
+> **Autonomous, Multi-Agent Real Estate Mission Control Powered by Google Cloud, Google ADK & Gemini 3.7 Flash**
 
 [![Google Cloud](https://img.shields.io/badge/Google_Cloud-Cloud_Run_%7C_Firestore_%7C_Pub%2FSub_%7C_Scheduler-4285F4?logo=google-cloud&logoColor=white)](https://cloud.google.com)
 [![Gemini](https://img.shields.io/badge/Gemini-3.7_Flash_%7C_@google/genai-8E75B2?logo=google&logoColor=white)](https://ai.google.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
 ---
 
-## 📖 Table of Contents
-1. [Project Overview](#-project-overview)
-2. [The Problem](#-the-problem)
-3. [The Solution](#-the-solution)
-4. [Why It Is Agentic (Not Just a Chatbot)](#-why-it-is-agentic-not-just-a-chatbot)
-5. [Taskmaster Track Alignment](#-taskmaster-track-alignment)
-6. [Key Features](#-key-features)
-7. [System Architecture](#-system-architecture)
-8. [Multi-Agent Workflow & ADK Pattern](#-multi-agent-workflow--adk-pattern)
-9. [Google Technology Stack](#-google-technology-stack)
-   - [Gemini 3.7 Flash & @google/genai](#gemini-37-flash--googlegenai)
-   - [Google Cloud Run](#google-cloud-run)
-   - [Google Cloud Firestore](#google-cloud-firestore)
-   - [Google Cloud Pub/Sub](#google-cloud-pubsub)
-   - [Google Cloud Scheduler](#google-cloud-scheduler)
-10. [Authentication & User Isolation](#-authentication--user-isolation)
-11. [Cross-Session Memory Engine](#-cross-session-memory-engine)
-12. [Autonomous Background Monitoring](#-autonomous-background-monitoring)
-13. [Observability & OpenTelemetry Tracing](#-observability--opentelemetry-tracing)
-14. [Security & Human Safeguards (HITL)](#-security--human-safeguards-hitl)
-15. [Quick Start & Setup](#-quick-start--setup)
-16. [Environment Variables](#-environment-variables)
-17. [Cloud Deployment Guide](#-cloud-deployment-guide)
-18. [4-Minute Hackathon Demo Script for Judges](#-4-minute-hackathon-demo-script-for-judges)
-19. [Hackathon Compliance Summary](#-hackathon-compliance-summary)
+## 1. Overview
+
+**Agentic Housing Navigator** is an autonomous real estate navigation system that converts natural-language housing requirements into proactive, multi-agent missions. Built on Google Cloud and the Google Agent Development Kit (ADK) pattern, the platform operates continuously to evaluate listings, calculate multi-factor affordability and commute metrics, maintain cross-session user memory, and run background monitoring for new inventory.
+
+### What Problem It Solves
+Finding rental housing is traditionally a tedious, manual chore. Renters spend weeks juggling conflicting constraints across budget, commute distance, floor levels, furnishing, and hidden utility costs while constantly refreshing listing portals.
+
+### Why Traditional Housing Search Is Inefficient
+- **Keyword & Filter Bottlenecks:** Traditional portals rely on rigid, shallow filters that cannot capture nuanced requirements (e.g., *"avoid ground floor, need power backup for remote work, max 20-min commute to campus"*).
+- **Manual Repetition:** Users must repeatedly run identical searches across multiple days to catch newly added listings.
+- **Hidden Trade-offs:** Portals display basic rent but obscure total cost of living (maintenance, security deposits, utility estimates).
+- **Stateless & Forgetful:** Every search session starts from scratch with zero memory of user lifestyle constraints or past decisions.
+
+### How the Autonomous Agent Approach Is Different
+Instead of requiring manual filtering, the system acts as an autonomous delegate. The user expresses a single high-level housing goal. A coordinated network of specialized agents decomposes the goal, queries the inventory, conducts deterministic financial and spatial audits, scores candidates, persists user lifestyle preferences, and deploys a background monitoring daemon to alert the user when new matching listings appear.
+
+### Who Benefits
+- **Students & University Staff:** Finding verified accommodations near campus within strict student budgets.
+- **Relocating Professionals:** Seeking specific lifestyle amenities (high-speed internet, power backup, parking, higher floors) near tech corridors.
+- **Busy Renters:** Anyone who wants an autonomous agent to handle repetitive market scanning and trade-off analysis.
 
 ---
 
-## 🌟 Project Overview
+## 2. Problem Statement
 
-**Agentic Housing Navigator** is an autonomous real estate search mission control that turns messy, natural-language human housing requests into deterministic, multi-agent missions. It operates asynchronously in the background, continuously monitors real estate feeds, evaluates properties using a mathematical 7-factor scoring engine, maintains cross-session lifestyle memory, and enforces Human-in-the-Loop approval before taking external actions.
+Renting a home involves high-dimensional decision-making with competing constraints:
 
----
-
-## 🛑 The Problem
-
-Finding rental housing is currently one of the most stressful, fragmented, and time-consuming tasks:
-- **Search Fatigue:** Renters spend hours manually refreshing portals, applying filters, and checking new listings.
-- **Hidden Trade-offs:** Portals show photos and prices, but hide crucial trade-offs (e.g., ground floor noise, high security deposits, long commutes).
-- **Transient Memory:** When users start a new search, they have to re-enter all their preferences and rules from scratch.
-- **Passive Portals:** Traditional real estate platforms do not act autonomously on behalf of the tenant; they merely display static records.
+1. **Finding Suitable Properties:** Sorting through hundreds of unvetted listings to find units that match exact structural criteria.
+2. **Budget Constraints & Hidden Costs:** Monthly rent alone does not reflect true move-in expenses (security deposits, maintenance surcharges, utility bills).
+3. **Location & Commute Requirements:** Proximity is often measured in straight-line distance rather than realistic transit time (walking, two-wheeler, cab).
+4. **Complex Lifestyle Preferences:** Constraints like floor preference (avoiding damp/noisy ground floors), dedicated vehicle parking, and pet friendliness are rarely filterable together.
+5. **Multi-Property Comparison:** Comparing trade-offs between 3–5 properties across rent, distance, furnishing, and amenities is mentally exhausting.
+6. **Continuous Market Checking:** High-demand properties get leased quickly; renters must constantly refresh portals.
+7. **Repetitive Manual Work:** Repeating the same manual search, evaluation, and landlord inquiry drafting over and over.
 
 ---
 
-## 💡 The Solution
+## 3. Solution
 
-**Agentic Housing Navigator** flips the paradigm from **passive search** to **autonomous mission execution**:
-1. **Natural Language Goal Decomposition:** Express requirements naturally (*"Find a furnished 2BHK near Koramangala with power backup and high floor under ₹22,000"*).
-2. **Deterministic 7-Factor Mathematical Scoring (0–100%):** Provides transparent mathematical matching alongside Gemini-generated trade-off explanations.
-3. **Cross-Session Memory Persistence:** Remembers user constraints (floor preference, pet restrictions, commute limits) across browser sessions.
-4. **Cloud-Native Background Monitoring:** Cloud Scheduler and Pub/Sub wake up background workers to evaluate new inventory without requiring an open browser.
-5. **Human-in-the-Loop Gateway:** Drafts outreach messages to landlords, pausing for user approval before dispatching.
-
----
-
-## 🤖 Why It Is Agentic (Not Just a Chatbot)
-
-| Dimension | Conventional Real Estate Chatbot | Agentic Housing Navigator |
-| :--- | :--- | :--- |
-| **Execution Model** | Single-turn Q&A prompt/response | Multi-agent autonomous pipeline with state machine |
-| **Persistence** | Ephemeral chat session | Durable Firestore missions, shortlists, and memory |
-| **Background Action**| Stops when user closes tab | Runs asynchronously via Cloud Scheduler & Pub/Sub |
-| **Decision Logic** | Hallucination-prone text generation | Hybrid deterministic 7-factor scoring + AI rationale |
-| **External Actions** | Informs user or generates raw text | Human-in-the-Loop approval gate with draft staging |
-| **Telemetry** | None | Full OpenTelemetry-style span traces & latency logs |
-
----
-
-## 🎯 Taskmaster Track Alignment
-
-Agentic Housing Navigator squarely addresses the **Taskmaster** track:
-- **Autonomous Task Execution:** Decomposes complex real estate discovery into independent, verifiable sub-tasks.
-- **Multi-Step Coordination:** Chains Requirement Analysis → Inventory Querying → Budget & Commute Verification → Deterministic Ranking → Trade-Off Synthesis → Outreach Drafting.
-- **Resilient Background Execution:** Continues task execution independently via Google Cloud event-driven infrastructure.
-
----
-
-## 🚀 Key Features
-
-- **Natural Language Parsing:** Powered by Gemini 3.7 Flash with structured JSON schema outputs.
-- **7-Factor Mathematical Match Engine:** Budget (30%), Location (25%), Property Type (15%), Bedrooms (10%), Furnishing (10%), Move-In Date (5%), Amenities (5%).
-- **AI Recommendation Rationales:** Structured explanations (*Why Selected, Key Advantages, Trade-offs, Total Estimated Upfront Cost*).
-- **Autonomous Background Listener:** Evaluates new listings via Pub/Sub events with built-in idempotency to prevent duplicate alerts.
-- **Human-in-the-Loop Gateway:** Approve, Edit, or Reject agent actions (e.g., landlord outreach).
-- **Deep Observability:** Telemetry viewer with latency graphs, retry traces, and sanitized JSON payloads.
-- **Interactive Comparison Engine:** Side-by-side multi-property analysis with highlighted parameter parity.
-
----
-
-## 🏗️ System Architecture
+Agentic Housing Navigator transforms a high-level natural language prompt into an autonomous, 8-stage verifiable pipeline:
 
 ```
-                               ┌────────────────────────────────────────────────────────┐
-                               │                 Client Layer (Browser / Mobile)        │
-                               │  [ React 18 + Vite + Tailwind CSS + Lucide Icons ]     │
-                               └───────────────────────────┬────────────────────────────┘
-                                                           │ HTTPS / REST
-                                                           ▼
-                               ┌────────────────────────────────────────────────────────┐
-                               │           Google Cloud Run Container (Port 3000)       │
-                               │  [ Node.js + Express API Layer + ADK Orchestrator ]    │
-                               └───────┬───────────────────┬───────────────────┬────────┘
-                                       │                   │                   │
-                ┌──────────────────────┘                   │                   └──────────────────────┐
-                ▼                                          ▼                                          ▼
-┌──────────────────────────────┐       ┌──────────────────────────────┐       ┌──────────────────────────────┐
-│    Gemini 3.7 Flash Model    │       │    Google Cloud Firestore    │       │    Google Cloud Pub/Sub      │
-│  (@google/genai SDK Proxy)   │       │  (Missions, Memory, Events)  │       │  (Topics & Push Subscriptions│
-└──────────────────────────────┘       └──────────────────────────────┘       └──────────────▲───────────────┘
-                                                                                             │
-                                                                              ┌──────────────┴───────────────┐
-                                                                              │    Google Cloud Scheduler    │
-                                                                              │  (15-Minute Periodic Cron)   │
-                                                                              └──────────────────────────────┘
+User Goal
+   ↓
+Requirement Understanding (RequirementAgent + Gemini 3.7 Flash)
+   ↓
+Multi-Agent Orchestration (HousingOrchestrator)
+   ↓
+Property Discovery (PropertySearchAgent)
+   ↓
+Affordability Analysis (BudgetAgent)
+   ↓
+Location Analysis (LocationAgent)
+   ↓
+Preference Filtering (PreferenceAgent)
+   ↓
+Intelligent Ranking (RankingAgent — 7-Factor Engine + AI Rationale)
+   ↓
+User Notification (Notification System + Firestore)
+   ↓
+Background Monitoring (MonitoringAgent + Cloud Scheduler + Pub/Sub)
+   ↓
+Human Approval for Sensitive Actions (Human-in-the-Loop Gateway)
 ```
 
 ---
 
-## 🧩 Multi-Agent Workflow & ADK Pattern
+## 4. Why It Is Agentic
 
-The system implements the **Google Agent Development Kit (ADK)** architectural pattern using specialized, decoupled agent modules:
+Agentic Housing Navigator is **not a chatbot**. It is an autonomous task-execution engine.
 
-1. **`HousingOrchestrator` (Root Coordinator):** Coordinates the execution lifecycle, handles state transitions, and manages recovery.
-2. **`RequirementAgent`:** Uses Gemini 3.7 Flash with strict JSON schema definitions to extract 7 structured search parameters.
-3. **`SearchAgent`:** Executes targeted multi-criteria property queries with bounding filters.
-4. **`BudgetAgent`:** Calculates total financial impact including monthly rent, security deposits, maintenance fees, and upfront commitments.
-5. **`LocationAgent`:** Computes commute distances, travel durations (walking, two-wheeler, driving), and proximity scores.
-6. **`PreferenceAgent`:** Enforces lifestyle constraints from persistent memory (e.g., floor levels, pet friendliness, parking).
-7. **`RankingAgent`:** Executes the deterministic 7-factor scoring engine and requests Gemini-generated trade-off breakdowns.
-8. **`CommunicationAgent`:** Prepares landlord inquiries under the Human-in-the-Loop approval gate.
-9. **`MonitoringAgent`:** Stateless background worker invoked by Pub/Sub to evaluate active missions against new inventory.
+| Chatbot Behavior | Agentic Housing Navigator Behavior |
+|---|---|
+| Generates unstructured text responses | Executes verifiable multi-step workflows with structured state |
+| Forgets preferences once the session ends | Persists cross-session lifestyle memory in Cloud Firestore |
+| Passive: only responds when spoken to | Proactive: runs continuous background monitoring via Cloud Scheduler |
+| Cannot interact with backend services | Invokes 20 registered tools for database queries, scoring, and alerts |
+| Unpredictable, hallucinated recommendations | Deterministic 7-factor mathematical scoring with grounded Gemini rationales |
+| Uncontrolled direct actions | Human-in-the-Loop approval gate for sensitive external actions |
 
----
+### Core Agentic Capabilities Implemented
+- **Goal-Based Execution:** Translates high-level intent into an actionable search mission with discrete milestones.
+- **Multi-Agent Orchestration:** 8 specialized sub-agents coordinate sequentially through the ADK `HousingOrchestrator`.
+- **Tool Usage:** Agents invoke 20 discrete tools (`search_properties`, `calculate_affordability`, `calculate_distance`, `calculate_match_score`, `compare_properties`, `filter_preferences`, `schedule_monitoring`, etc.).
+- **Autonomous Background Monitoring:** Headless execution via Cloud Scheduler crons (`*/15 * * * *`) and Cloud Pub/Sub push subscriptions.
+- **Persistent Memory:** Discovers and stores long-term lifestyle preferences (floor level, parking, budget) in `FirestoreMemoryRepository`.
+- **Event-Driven Processing:** Decoupled Pub/Sub event bus (`housing-monitoring`, `property-updates`, `agent-events`).
+- **Human-in-the-Loop (HITL) Gate:** Staging modal for landlord inquiries requiring user review, edit, or approval before action execution.
+- **Deterministic Fallback & Resilience:** 100% mathematical scoring engine guarantees uninterrupted service during upstream LLM rate limits.
+- **Full Observability:** OpenTelemetry-style telemetry tracing every agent step, tool invocation, execution latency, and payload snapshot.
 
-## ☁️ Google Technology Stack
-
-### Gemini 3.7 Flash & @google/genai
-- Integrated using the official `@google/genai` TypeScript SDK.
-- Used for structured JSON extraction, natural language constraint understanding, and structured trade-off summaries.
-- Server-side proxy keeps all API keys secure while client-side fallback guarantees 100% availability during network partitions.
-
-### Google Cloud Run
-- Containerized Node.js service hosting the backend REST API, ADK multi-agent orchestrator, and production React SPA.
-- Supports horizontal scaling, health checks, and graceful shutdown handling.
-
-### Google Cloud Firestore
-- Persistent storage for user profiles, search missions, shortlisted properties, long-term memory preferences, and telemetry event logs.
-- Dual-mode architecture: seamlessly uses Cloud Firestore in production and in-memory persistence in local development.
-
-### Google Cloud Pub/Sub
-- Event-driven asynchronous backbone with dedicated topics:
-  - `housing-monitoring`: Heartbeats for active mission evaluation.
-  - `property-updates`: Ingestion pipeline for newly listed rental units.
-  - `agent-events`: Real-time telemetry and audit stream.
-
-### Google Cloud Scheduler
-- Triggers periodic cron jobs (`*/15 * * * *`) that post messages to Pub/Sub, keeping search missions active 24/7.
+### What the Agent Does After Receiving a Goal
+1. Extracts budget, location, bedroom count, and lifestyle rules using Gemini 3.7 Flash JSON schema.
+2. Queries Firestore long-term memory to retrieve previously stored preferences and updates new ones.
+3. Dispatches `PropertySearchAgent` to retrieve matching candidate listings from inventory.
+4. Passes candidates to `BudgetAgent` for total cost of living breakdown and 15% stretch ceiling check.
+5. Invokes `LocationAgent` to compute commute distance and multimodal transit times.
+6. Runs `PreferenceAgent` to enforce floor restrictions, parking, and amenity requirements.
+7. Dispatches `RankingAgent` for 7-factor mathematical match scoring (0–100%) and Gemini trade-off synthesis.
+8. Deploys `MonitoringAgent` with a 15-minute background polling schedule and emits real-time alert notifications.
 
 ---
 
-## 🔐 Authentication & User Isolation
+## 5. Hackathon Track
 
-- **Token-Based Authentication:** Clean user authentication with session tokens stored in secure local storage.
-- **User Data Isolation:** All Firestore repositories filter queries by `userId`, preventing unauthorized cross-user data access.
-- **Graceful Session Restoration:** Zero UI flashing on initial load with animated loading spinners during session verification.
+### Track: Taskmaster
 
----
+Agentic Housing Navigator is purpose-built for the **Taskmaster** category:
 
-## 🧠 Cross-Session Memory Engine
-
-- **Long-Term Preference Store:** Remembers learned constraints across search missions (e.g., floor level, pet policies, commute hubs).
-- **Auto-Enrichment:** When creating new search missions, the orchestrator automatically enriches natural-language prompts with stored memory constraints.
-- **Interactive Management:** Users can view, edit, or delete stored preferences in the `/preferences` tab.
+- **End-to-End Workflow Automation:** Replaces hours of manual housing search with a single autonomous mission that executes 8 pipeline stages from natural language understanding to ranked shortlist generation.
+- **Automated Multi-Dimensional Analysis:** Simultaneously computes financial affordability (rent + maintenance + deposit + utilities), transit times (walking, two-wheeler, driving), and lifestyle compliance.
+- **Persistent Background Operation:** Does not terminate when the user closes the tab; continues monitoring market listings via Google Cloud Scheduler and Google Cloud Pub/Sub.
+- **Action-Oriented Tool Execution:** Directly operates over 20 structured tools and 9 Firestore repositories rather than merely producing conversational text.
+- **Human-Governed Execution:** Uses Human-in-the-Loop gating so sensitive actions (contacting property owners, scheduling visits) remain firmly under user control.
 
 ---
 
-## 📡 Autonomous Background Monitoring
+## 6. Key Features
 
-- **24/7 Listing Watcher:** Operates even after the user closes the browser.
-- **Idempotent Evaluation:** Prevents duplicate notifications by tracking evaluated property IDs per mission.
-- **Real-Time Match Alerts:** Generates high-priority notifications and instant modal banners when a listing scores $>85\%$.
-
----
-
-## 📊 Observability & OpenTelemetry Tracing
-
-- **Audit & Telemetry Log:** Records every agent execution, tool call, model invocation, latency (ms), and retry event.
-- **Sanitized Payloads:** Automatic redaction of sensitive user credentials and tokens before persisting logs.
-- **1-Click Export:** Download full JSON telemetry traces for auditability and grading verification.
-
----
-
-## 🛡️ Security & Human Safeguards (HITL)
-
-- **Zero Client-Side Secrets:** `GEMINI_API_KEY` is strictly managed server-side.
-- **Human-in-the-Loop Approval:** The agent cannot contact property owners or schedule viewings without explicit user authorization.
-- **Editable Drafts:** Users can review, edit, or reject the proposed inquiry message before dispatching.
+| Feature | Description | Status |
+|---|---|:---:|
+| **AI Requirement Understanding** | Natural language query decomposition into structured criteria via Gemini 3.7 Flash with deterministic fallback | ✅ Implemented |
+| **Multi-Agent Orchestration** | 8-agent sequential coordination pipeline following Google ADK architectural patterns | ✅ Implemented |
+| **Property Discovery** | Multi-attribute candidate indexing and query filtering across structural parameters | ✅ Implemented |
+| **Affordability Analysis** | Total monthly housing cost computation (rent, maintenance, utilities, deposit) with 15% stretch buffer | ✅ Implemented |
+| **Location Analysis** | Geographic radius filtering, campus proximity scoring, and multimodal transit time estimations | ✅ Implemented |
+| **Preference Filtering** | Strict enforcement of floor constraints (avoid ground floor), furnishing, parking, and amenities | ✅ Implemented |
+| **Property Ranking & Scoring** | Deterministic 7-factor mathematical engine (0–100%) combined with Gemini-grounded trade-off rationales | ✅ Implemented |
+| **Background Monitoring** | Event-driven background worker triggered by Cloud Scheduler (15-min cron) and Cloud Pub/Sub | ✅ Implemented |
+| **Persistent Cross-Session Memory** | Long-term memory store in Cloud Firestore that captures lifestyle rules and enriches future searches | ✅ Implemented |
+| **Real-Time Notifications** | In-app notification engine alerting users to high-scoring listings, mission updates, and background matches | ✅ Implemented |
+| **Human-in-the-Loop Approval** | Interactive authorization modal with draft staging and message editing for landlord inquiries | ✅ Implemented |
+| **Authentication & User Isolation** | Multi-persona session management, token validation, and per-user data isolation across repositories | ✅ Implemented |
+| **Observability & Telemetry** | OpenTelemetry-style execution event tracking with execution spans, latency metrics, and JSON audit export | ✅ Implemented |
+| **Side-by-Side Comparison** | Multi-property comparative analysis tool highlighting price, distance, move-in cost, and score differences | ✅ Implemented |
+| **Real Estate Data Feed Ingestion** | Inbound Pub/Sub webhook endpoint (`/api/monitoring/property-event`) for new listing evaluation | ✅ Implemented |
 
 ---
 
-## 💻 Quick Start & Setup
+## 7. Multi-Agent Architecture
+
+```mermaid
+flowchart TD
+    U[User / Client UI] -->|Goal Prompt| O[HousingOrchestrator]
+    
+    subgraph ADK_Pipeline ["Google ADK Multi-Agent Execution Pipeline"]
+        O -->|1. Decompose Query| R[RequirementAgent]
+        O -->|2. Query Inventory| S[PropertySearchAgent]
+        O -->|3. Audit Finances| B[BudgetAgent]
+        O -->|4. Proximity & Transit| L[LocationAgent]
+        O -->|5. Filter Constraints| P[PreferenceAgent]
+        O -->|6. 7-Factor Score & Explain| RK[RankingAgent]
+        O -->|7. Deploy Daemon| M[MonitoringAgent]
+    end
+
+    subgraph Intelligence ["Google AI / Foundation Models"]
+        R -->|Structured Schema Extraction| G[Gemini 3.7 Flash]
+        RK -->|Grounded Trade-off Rationale| G
+    end
+
+    subgraph Memory_And_Storage ["Google Cloud Persistence (Firestore)"]
+        R <-->|Read / Write Preferences| FM[(FirestoreMemoryRepository)]
+        O -->|Save Mission State| FMS[(FirestoreMissionRepository)]
+        O -->|Record Telemetry Spans| FE[(FirestoreEventRepository)]
+        S <-->|Query Listings| FP[(FirestorePropertyRepository)]
+        M -->|Store Monitoring Schedule| FJ[(FirestoreMonitoringJobRepository)]
+    end
+
+    subgraph Background_Workers ["Google Cloud Asynchronous Infrastructure"]
+        CS[Cloud Scheduler\n15-min Cron] -->|Dispatch Heartbeat| PS[Cloud Pub/Sub\nhousing-monitoring]
+        PS -->|Push Delivery| MW[Cloud Run MonitoringWorker]
+        MW -->|Evaluate Active Missions| FMS
+        MW -->|Trigger Alert| FN[(FirestoreNotificationRepository)]
+    end
+
+    subgraph HITL_Gateway ["Human-in-the-Loop Gateway"]
+        U -->|Initiate Landlord Outreach| C[CommunicationAgent]
+        C -->|Stage Draft Authorization| FA[(FirestoreApprovalRepository)]
+        FA -->|User Review / Edit / Approve| U
+    end
+```
+
+---
+
+### Detailed Agent Specifications
+
+#### 1. HousingOrchestrator
+- **Responsibility:** Root coordinator managing pipeline lifecycle, stage transitions, event logging, and state synchronization across Firestore repositories.
+- **Inputs:** Natural language query string or structured `MissionRequirements` object.
+- **Outputs:** `AgentOrchestrationResult` containing ranked matches, scores, reasoning summaries, and telemetry events.
+- **Tools Used:** Coordinates sub-agent tools, `save_mission`, `create_notification`.
+- **Interactions:** Sequences `RequirementAgent` → `PropertySearchAgent` → `BudgetAgent` → `LocationAgent` → `PreferenceAgent` → `RankingAgent` → `MonitoringAgent`.
+
+#### 2. RequirementAgent
+- **Responsibility:** Decomposes unstructured search prompts into normalized parameters (`MissionRequirements`); merges long-term user lifestyle preferences from memory; persists newly detected constraints.
+- **Inputs:** Raw user prompt (`rawQuery`), `missionId`, optional structured overrides.
+- **Outputs:** `RequirementAgentResult` with normalized requirements, confidence score, and applied memory tags.
+- **Tools Used:** `load_user_preferences`, `save_user_preference`, Gemini 3.7 Flash API via `@google/genai` (with deterministic fallback).
+- **Interactions:** Invoked first by `HousingOrchestrator`; passes structured requirements downstream to all evaluation agents.
+
+#### 3. PropertySearchAgent
+- **Responsibility:** Executes multi-parameter catalog indexing and query filtering against available property inventory.
+- **Inputs:** `MissionRequirements`, `missionId`.
+- **Outputs:** `PropertySearchResult` with candidate property listings and match statistics.
+- **Tools Used:** `search_properties`.
+- **Interactions:** Receives requirements from `HousingOrchestrator`; supplies candidate listings to `BudgetAgent`.
+
+#### 4. BudgetAgent
+- **Responsibility:** Performs financial audits calculating total monthly housing cost (rent + maintenance + utilities) and upfront cash needed (security deposit + advance); evaluates strict budget vs. 15% flexible ceiling.
+- **Inputs:** Candidate properties array, `MissionRequirements`, `missionId`.
+- **Outputs:** `BudgetEvaluationResult` with qualified properties, affordability breakdowns, and over-budget tallies.
+- **Tools Used:** `calculate_affordability`.
+- **Interactions:** Filters candidates from `PropertySearchAgent` and passes financially qualified listings to `LocationAgent`.
+
+#### 5. LocationAgent
+- **Responsibility:** Evaluates geographic distance, target radius compliance, proximity scoring, and multimodal transit durations (walking, two-wheeler, driving).
+- **Inputs:** Qualified properties array, `MissionRequirements`, `missionId`.
+- **Outputs:** `LocationEvaluationResult` with located properties, distance metrics, and closest/average distance tallies.
+- **Tools Used:** `calculate_distance`.
+- **Interactions:** Receives listings from `BudgetAgent` and forwards location-compliant properties to `PreferenceAgent`.
+
+#### 6. PreferenceAgent
+- **Responsibility:** Enforces lifestyle rules: floor restrictions (e.g., avoid ground floor / floor > 0), furnishing levels, parking type (covered/open), pet friendliness, and required amenities match percentages.
+- **Inputs:** Located properties array, `MissionRequirements`, `missionId`.
+- **Outputs:** `PreferenceEvaluationResult` with preferred properties and constraint match maps.
+- **Tools Used:** `filter_preferences`.
+- **Interactions:** Receives listings from `LocationAgent` and passes filtered properties to `RankingAgent`.
+
+#### 7. RankingAgent
+- **Responsibility:** Applies a deterministic 7-factor mathematical scoring algorithm (0–100%) and uses Gemini 3.7 Flash to synthesize grounded trade-off rationales and recommendation verdicts.
+- **Inputs:** Candidate property pool, `MissionRequirements`, `missionId`.
+- **Outputs:** `RankingAgentResult` with scored properties, factor breakdowns, comparative highlights, and AI explanations.
+- **Tools Used:** `calculate_match_score`, `compare_properties`, Gemini 3.7 Flash API via `@google/genai` (with deterministic fallback).
+- **Interactions:** Receives candidates from `PreferenceAgent`; delivers ranked and explained results to `HousingOrchestrator`.
+
+#### 8. MonitoringAgent / MonitoringWorker
+- **Responsibility:** Deploys and manages the asynchronous background monitoring daemon; polls inventory every 15 minutes; processes Pub/Sub events from Cloud Scheduler; performs idempotent scoring for new listings and sends notifications.
+- **Inputs:** `missionId`, `MissionRequirements`, matched property IDs, incoming property event payloads.
+- **Outputs:** `MonitoringActivationResult`, background evaluation logs, and new match notifications.
+- **Tools Used:** `create_mission`, `update_mission`, `create_notification`, `schedule_monitoring`.
+- **Interactions:** Activated by `HousingOrchestrator` after search completion; runs headless via Cloud Run worker.
+
+#### 9. CommunicationAgent (HITL Gateway)
+- **Responsibility:** Prepares drafted outreach inquiries and visit requests for shortlisted properties; halts autonomous dispatch behind a Human-in-the-Loop approval gate.
+- **Inputs:** `missionId`, `propertyId`, `actionType`, `proposedMessage`, recipient contact info.
+- **Outputs:** `AgentApprovalRequest` (pending user authorization).
+- **Tools Used:** `request_user_approval`.
+- **Interactions:** Invoked when user initiates landlord contact; requires manual approval/edit before execution.
+
+---
+
+## 8. Technology Stack
+
+- **AI & Foundation Models:** Google Gemini 3.7 Flash via `@google/genai` TypeScript SDK
+- **Backend & Compute:** Node.js, Express, TypeScript, Google Cloud Run
+- **Database & Persistence:** Google Cloud Firestore (9 structured repositories)
+- **Messaging & Event Bus:** Google Cloud Pub/Sub (`housing-monitoring`, `property-updates`, `agent-events`)
+- **Scheduling & Crons:** Google Cloud Scheduler (15-minute periodic heartbeat)
+- **Frontend & UI:** React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Motion
+
+---
+
+## 9. Quick Start
 
 ### Prerequisites
-- Node.js 18+ or Bun
-- npm or yarn
+- Node.js 20+
+- npm or bun
+- *(Optional)* Google Gemini API Key (system includes deterministic fallbacks if key is absent)
 
-### Installation
+### Installation & Local Run
+
 ```bash
-# Clone the repository
-git clone https://github.com/example/agentic-housing-navigator.git
-cd agentic-housing-navigator
+# 1. Clone the repository
+git clone https://github.com/vaishnavigirase0817/Agentic-Housing-Navigator.git
+cd Agentic-Housing-Navigator
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Configure environment variables
+# 3. Configure environment variables (optional)
 cp .env.example .env
-# Add your GEMINI_API_KEY in .env
+# Edit .env and add your GEMINI_API_KEY if available
 
-# Start development server (boots on port 3000)
+# 4. Start the development server (Full stack: Express API + Vite React SPA)
 npm run dev
 ```
 
----
+The application will be running at `http://localhost:3000`.
 
-## ⚙️ Environment Variables
+### Verifying System Health
 
-Declare the following variables in `.env`:
-
-```env
-# Server Port (Default: 3000)
-PORT=3000
-
-# Google Gemini API Key (Server-side only)
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Google Cloud Project Configuration (Optional for cloud deployment)
-GOOGLE_CLOUD_PROJECT=your-project-id
-FIRESTORE_EMULATOR_HOST=
-```
-
----
-
-## 🚀 Cloud Deployment Guide
-
-### Deploy to Google Cloud Run
 ```bash
-# Build the production bundle
-npm run build
+# Check service and agent status
+curl http://localhost:3000/api/health
 
-# Build and deploy container image to Cloud Run
-gcloud run deploy agentic-housing-navigator \
-  --source . \
-  --platform managed \
-  --region asia-southeast1 \
-  --allow-unauthenticated \
-  --set-env-vars GEMINI_API_KEY="your_api_key"
+# Check Google Cloud metadata and registered tools
+curl http://localhost:3000/api/cloud/status
 ```
-
----
-
-## 🎬 4-Minute Hackathon Demo Script for Judges
-
-Use the persistent **Hackathon Demo Bar** at the top of the interface to walk through the entire autonomous workflow:
-
-1. **Minute 1: Mission Creation (`/create-mission`)**
-   - Click the preset button *"Koramangala 2BHK Under ₹22k"*.
-   - Point out how Gemini 3.7 Flash parses informal text into 7 structured parameters.
-   - Click **"Launch Autonomous Search Mission"**.
-
-2. **Minute 2: Multi-Agent Execution & Ranking (`/active-mission`)**
-   - Observe the live 8-stage progress tracker as sub-agents coordinate in real-time.
-   - Inspect the ranked property cards showing transparent match scores and Gemini-generated trade-off badges.
-
-3. **Minute 3: Human-in-the-Loop Gateway (`/property-details`)**
-   - Open the top-ranked property card and click **"Contact Owner"**.
-   - Show the **"Agent Action Requires Approval"** modal. Demonstrate editing the proposed draft and approving the action.
-
-4. **Minute 4: Background Monitoring & Telemetry (`Top Demo Bar` & `/activity`)**
-   - Click **"Trigger Background Event"** in the top bar to simulate an inbound Pub/Sub listing match.
-   - Observe the instant 97% match notification banner.
-   - Open `/activity` to show the full OpenTelemetry trace logs, latency metrics, and model names.
-
----
-
-## 📋 Hackathon Compliance Summary
-
-- **Gemini 3.5+**: Verified (`gemini-3.7-flash` via `@google/genai`).
-- **Google Agent Framework**: Verified (ADK Multi-Agent Orchestrator with 9 specialized agents).
-- **Google Cloud Run**: Verified (Containerized full-stack deployment on port 3000).
-- **Google Cloud Firestore**: Verified (Persistent missions, memory, and telemetry).
-- **Google Cloud Pub/Sub & Scheduler**: Verified (Asynchronous background monitoring daemon).
-- **Human-in-the-Loop Safeguards**: Verified (Approval modal with draft editing).
-- **Autonomous Execution**: Verified (End-to-end mission lifecycle without manual intervention).
-
----
-
-*Built with ❤️ for the Google Cloud & Agentic AI Hackathon.*
-
-
-#   A g e n t i c - H o u s i n g - N a v i g a t o r  
- 

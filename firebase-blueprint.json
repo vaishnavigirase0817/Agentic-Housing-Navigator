@@ -1,0 +1,130 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and account settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID" },
+        "name": { "type": "string", "description": "Display name of user" },
+        "email": { "type": "string", "description": "User email address" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["id", "createdAt"]
+    },
+    "Mission": {
+      "title": "Mission",
+      "description": "Autonomous housing search mission",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Mission identifier" },
+        "title": { "type": "string", "description": "Mission title" },
+        "status": { "type": "string", "description": "Current status of the mission" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation ISO date" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated ISO date" },
+        "requirements": { "type": "object", "description": "Extracted search parameters" },
+        "currentStageIndex": { "type": "number", "description": "Active pipeline stage index" },
+        "stages": { "type": "array", "description": "Pipeline execution stages" },
+        "matchedPropertyIds": { "type": "array", "description": "Matched property IDs" },
+        "rankedScores": { "type": "object", "description": "Deterministic and AI match scores" },
+        "monitoring": { "type": "object", "description": "Daemon monitoring configuration and stats" },
+        "shortlistedPropertyIds": { "type": "array", "description": "Shortlisted property IDs" },
+        "dismissedPropertyIds": { "type": "array", "description": "Dismissed property IDs" },
+        "appliedMemoryNotes": { "type": "array", "description": "Persistent memory notes applied by the agent" }
+      },
+      "required": ["id", "title", "status", "createdAt", "requirements"]
+    },
+    "Preference": {
+      "title": "Preference",
+      "description": "Persistent user memory and housing preferences",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "User identifier" },
+        "maxBudget": { "type": "number", "description": "Maximum monthly rent ceiling" },
+        "minBudget": { "type": "number", "description": "Minimum monthly rent floor" },
+        "preferredPropertyType": { "type": "string", "description": "Preferred property type" },
+        "preferredFurnishing": { "type": "string", "description": "Preferred furnishing status" },
+        "preferredDistanceKm": { "type": "number", "description": "Maximum campus commute radius in km" },
+        "avoidGroundFloor": { "type": "boolean", "description": "Whether to filter out or penalize ground-floor apartments" },
+        "parkingRequired": { "type": "boolean", "description": "Vehicle parking requirement" },
+        "preferredAmenities": { "type": "array", "description": "List of essential amenities" },
+        "targetLocality": { "type": "string", "description": "Target neighborhood or landmark" },
+        "petFriendly": { "type": "boolean", "description": "Pet friendly requirement" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated timestamp" }
+      },
+      "required": ["userId", "maxBudget", "updatedAt"]
+    },
+    "Shortlist": {
+      "title": "Shortlist",
+      "description": "User shortlisted property IDs",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "User identifier" },
+        "propertyIds": { "type": "array", "description": "Array of shortlisted property IDs" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated timestamp" }
+      },
+      "required": ["userId", "propertyIds", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "In-app alerts and match notifications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Notification ID" },
+        "userId": { "type": "string", "description": "Target user ID" },
+        "title": { "type": "string", "description": "Notification title" },
+        "message": { "type": "string", "description": "Notification message" },
+        "type": { "type": "string", "description": "Notification category" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "read": { "type": "boolean", "description": "Read status" },
+        "propertyId": { "type": "string", "description": "Optional associated property ID" },
+        "missionId": { "type": "string", "description": "Optional associated mission ID" },
+        "matchScore": { "type": "number", "description": "Optional match score" }
+      },
+      "required": ["id", "title", "message", "type", "timestamp", "read"]
+    },
+    "AgentEvent": {
+      "title": "AgentEvent",
+      "description": "Multi-agent execution activity telemetry event",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Event unique ID" },
+        "missionId": { "type": "string", "description": "Associated mission ID" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Event timestamp" },
+        "agent": { "type": "string", "description": "Emitting agent name" },
+        "action": { "type": "string", "description": "Action or task performed" },
+        "status": { "type": "string", "description": "Event status" },
+        "category": { "type": "string", "description": "Event category" },
+        "description": { "type": "string", "description": "Human readable event description" },
+        "metadata": { "type": "object", "description": "Structured event payload" }
+      },
+      "required": ["id", "missionId", "timestamp", "status", "description"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Stores user profiles"
+    },
+    "/missions/{missionId}": {
+      "schema": "Mission",
+      "description": "Stores active and past housing search missions"
+    },
+    "/preferences/{userId}": {
+      "schema": "Preference",
+      "description": "Stores persistent user memory and lifestyle preferences"
+    },
+    "/shortlists/{userId}": {
+      "schema": "Shortlist",
+      "description": "Stores user shortlisted property IDs"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Stores user notifications and alerts"
+    },
+    "/agent_events/{eventId}": {
+      "schema": "AgentEvent",
+      "description": "Stores telemetry and activity events emitted by ADK agents"
+    }
+  }
+}
